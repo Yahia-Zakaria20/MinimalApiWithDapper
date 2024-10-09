@@ -1,6 +1,10 @@
-@MinimalApiWithDapper.Web_HostAddress = http://localhost:5134
+@MinimalApiWithDapper.Web_HostAddress = https://localhost:7247
 
 GET {{MinimalApiWithDapper.Web_HostAddress}}/weatherforecast/
 Accept: application/json
+
+###
+
+GET {{MinimalApiWithDapper.Web_HostAddress}}/employee
 
 ###

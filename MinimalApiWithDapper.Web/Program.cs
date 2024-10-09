@@ -1,6 +1,11 @@
 
-using Microsoft.EntityFrameworkCore;
+using Dapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Data.SqlClient;
 using MinimalApiWithDapper.Web.Data;
+using MinimalApiWithDapper.Web.Data.Entites;
+using MinimalApiWithDapper.Web.Extentions;
+using System.Security.Cryptography.Xml;
 
 namespace MinimalApiWithDapper.Web
 {
@@ -16,26 +21,12 @@ namespace MinimalApiWithDapper.Web
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             webApplicationBuilder.Services.AddEndpointsApiExplorer();
             webApplicationBuilder.Services.AddSwaggerGen();
-            webApplicationBuilder.Services.AddDbContext<ApplicationsDbcontext>(options =>
-          options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefultConnection")));
+
+         
+           
 
             var app = webApplicationBuilder.Build();
 
-            var scope = app.Services.CreateScope();
-            var service = scope.ServiceProvider;
-            var dbcontext = service.GetRequiredService<ApplicationsDbcontext>();
-            var LoggerFactory = service.GetRequiredService<ILoggerFactory>();
-
-            try
-            {
-                dbcontext.Database.Migrate();
-            }
-            catch (Exception ex)
-            {
-                var logger = LoggerFactory.CreateLogger<Program>();
-
-                logger.LogError(string.Empty, ex.Message);
-            }
 
 
             // Configure the HTTP request pipeline.
@@ -49,25 +40,9 @@ namespace MinimalApiWithDapper.Web
 
             app.UseAuthorization();
 
-            var summaries = new[]
-            {
-                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
+            app.EmployeeEndpoints(); // employee Endpoints
 
-            app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
-                    {
-                        Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        TemperatureC = Random.Shared.Next(-20, 55),
-                        Summary = summaries[Random.Shared.Next(summaries.Length)]
-                    })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast")
-            .WithOpenApi();
+
 
             app.Run();
         }
